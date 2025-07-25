@@ -1,0 +1,56 @@
+CREATE DATABASE if not exists teste;
+
+USE teste;
+
+DROP TABLE IF EXISTS loja_jogo;
+DROP TABLE IF EXISTS loja;
+DROP TABLE IF EXISTS jogo;
+
+CREATE TABLE IF NOT EXISTS jogo (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) UNIQUE,  
+    ano INT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS loja (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) UNIQUE,
+    endereco VARCHAR(200),
+    telefone VARCHAR(20)
+);
+
+CREATE TABLE IF NOT EXISTS loja_jogo (
+    loja_id INT,
+    jogo_id INT,
+    preco DECIMAL(10,2) NOT NULL,
+    quantidade_estoque INT NOT NULL,
+    PRIMARY KEY (loja_id, jogo_id),
+    FOREIGN KEY (loja_id) REFERENCES loja(id),
+    FOREIGN KEY (jogo_id) REFERENCES jogo(id)
+);
+
+INSERT INTO jogo(nome, ano)
+VALUES ('Helldivers 2', 2024), 
+       ('Death Stranding 2', 2025),
+       ('Days Gone', 2019),
+       ('Red Dead Redemption 2', 2018);
+
+INSERT INTO loja(nome, endereco, telefone)
+VALUES ('Games Shop', 'Rua das Flores, 123', '(11) 1234-5678'),
+       ('Digital Games', 'Av. Principal, 456', '(11) 8765-4321');
+
+-- Inserindo alguns jogos nas lojas com preços
+INSERT INTO loja_jogo(loja_id, jogo_id, preco, quantidade_estoque)
+VALUES 
+    (1, 1, 299.99, 10),  -- Helldivers 2 na Games Shop
+    (1, 2, 349.99, 5),   -- Death Stranding 2 na Games Shop
+    (2, 1, 289.99, 8),   -- Helldivers 2 na Digital Games
+    (2, 3, 199.99, 15);  -- Days Gone na Digital Games
+
+-- Consultando jogos e suas lojas
+SELECT l.nome as loja, j.nome as jogo, lj.preco, lj.quantidade_estoque
+FROM loja_jogo lj
+JOIN loja l ON l.id = lj.loja_id
+JOIN jogo j ON j.id = lj.jogo_id
+ORDER BY l.nome, j.nome;
+
